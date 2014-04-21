@@ -28,14 +28,6 @@ tape('merge random arrays', function (t) {
 tape('merge different sized arrays', function (t) {
   var a = rand(6)
   var b = rand(3)
-  console.log('a', a)
-  console.log('a', a)
-  console.log('a', a)
-  console.log('a', a)
-  console.log('a', a)
-  console.log('b', b)
-  console.log('c', c)
-  console.log(a.concat(b).length)
   pull(
     merge(pull.values(a), pull.values(b)),
     pull.collect(function (err, ary) {
