@@ -68,7 +68,6 @@ module.exports = function (left, right, compare) {
   var cb
   function abortAll(abort, cb) {
     if(endedLeft && endedRight) return cb()
-    console.error(abort, abort.toString())
     throw new Error('abort not implemented yet')
   }
 
