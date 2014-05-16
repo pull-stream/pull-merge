@@ -87,3 +87,22 @@ tape('merge many', function (t) {
 
 })
 
+tape('merge many as array', function (t) {
+
+  var all = [
+    rand(45), rand(92), rand(78), rand(100), rand(87)
+  ]
+
+  pull(
+    merge(all.map(function (e) { return pull.values(e) })),
+    pull.collect(function (err, ary) {
+      var expected = all.reduce(function (a, b) {
+        return a.concat(b)
+      }, [])
+      t.deepEqual(ary.length, expected.length)
+      t.deepEqual(ary, expected.sort())
+      t.end()
+    })
+  )
+
+})
