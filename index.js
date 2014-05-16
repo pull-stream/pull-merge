@@ -62,8 +62,16 @@ every pull stream has these states.
 
 */
 
-module.exports = function (left, right, compare) {
-
+var merge = module.exports = function (left, right, compare) {
+  if(Array.isArray(left)) {
+    compare = right
+    if(left.length == 1)
+      return left
+    else if(left.length == 2)
+      return merge(left.shift(), left.shift(), compare)
+    else
+      return merge(left.shift(), merge(left, compare), compare)
+  }
   compare = compare || cmp
   var cb
   function abortAll(abort, cb) {
