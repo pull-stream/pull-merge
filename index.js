@@ -13,10 +13,9 @@ function cmp (a, b) {
 var k = 0
 
 function singly(fun) {
-  var called = false, id = k++, c = 0
+  var called = false
   return function (value, cb) {
-    if(called) throw new Error('called twice')
-    var n = 0
+    if(called) return
     called = true
     fun(value, function (err, value) {
       called = false
