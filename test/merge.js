@@ -1,108 +1,50 @@
-var tape = require('tape')
+var async = require('interleavings')
 var pull = require('pull-stream')
+var assert = require('assert')
 var merge = require('../')
-var createHash = require('crypto').createHash
-var i = 0
-function rand(n) {
-  var a = []
-  while(n--) a.push(createHash('sha256').update(''+i++).digest('hex'))
-  return a.sort()
-}
 
-var a = rand(3)
-var b = rand(3)
-var c = rand(3)
+async.test(strange, function (err, results, stats) {
+    console.log(results)
+    assert.equal(stats.failures, 0)
+    console.log('passed')
+  })
 
-tape('merge random arrays', function (t) {
+function strange (async) {
 
-  pull(
-    merge(pull.values(a), pull.values(b)),
-    pull.collect(function (err, ary) {
-      t.deepEqual(ary, a.concat(b).sort())
-      t.end()
-    })
-  )
+    function p (read) {
+      return function (abort, cb) {
+        read(abort, async(cb))
+      }
+    }
 
-})
+    pull(
+      //pull many must return a result in the same partial order.
+      //so if we have a stream of even and a stream of odd numbers
+      //then those should be in the same order in the output.
+      merge([
+        pull.values([1,4,7,10]),
+        pull.values([2,5,8,11]),
+        pull.values([3,6,9,12])
+      ].map(p)),
+      function (read) {
+        return function (abort, cb) {
+          read(abort, function (end, data) {
+            console.log(end, data)
+            cb(end, data)
+          })
+        }
+      },
+      pull.collect(function (err, ary) {
+        console.log(ary)
 
-tape('merge different sized arrays', function (t) {
-  var a = rand(6)
-  var b = rand(3)
-  pull(
-    merge(pull.values(a), pull.values(b)),
-    pull.collect(function (err, ary) {
-      t.deepEqual(ary.length, a.length + b.length) // + c.length)
-      t.deepEqual(ary, a.concat(b).sort())
-      t.end()
-    })
-  )
-})
+        assert.deepEqual(ary, [1,2,3,4,5,6,7,8,9,10,11,12])
+        async.done()
+      })
+    )
 
-tape('merge multiple sized arrays', function (t) {
+  }
 
-  var a = rand(4)
-  var b = rand(2)
-  var c = rand(3)
-
-  console.log('a', a)
-  console.log('b', b)
-  console.log('c', c)
-  console.log(a.concat(b).length)
-
-  pull(
-    merge(
-      pull.values(a),
-      merge(pull.values(c), pull.values(b))
-    ),
-    pull.collect(function (err, ary) {
-      t.deepEqual(ary.length, a.length + b.length + c.length) // + c.length)
-      t.deepEqual(ary, a.concat(b).concat(c).sort())
-      t.end()
-    })
-  )
-})
-
-
-tape('merge many', function (t) {
-  var a = rand(45)
-  var b = rand(92)
-  var c = rand(78)
-  var d = rand(100)
-  var e = rand(87)
-
-  pull(
-    merge(
-      merge(
-        pull.values(a),
-        merge(pull.values(c), pull.values(b))
-      ),
-      merge(pull.values(d), pull.values(e))
-    ),
-    pull.collect(function (err, ary) {
-      t.deepEqual(ary.length, a.length + b.length + c.length + d.length + e.length) // + c.length)
-      t.deepEqual(ary, a.concat(b).concat(c).concat(d).concat(e).sort())
-      t.end()
-    })
-  )
-
-})
-
-tape('merge many as array', function (t) {
-
-  var all = [
-    rand(45), rand(92), rand(78), rand(100), rand(87)
-  ]
-
-  pull(
-    merge(all.map(function (e) { return pull.values(e) })),
-    pull.collect(function (err, ary) {
-      var expected = all.reduce(function (a, b) {
-        return a.concat(b)
-      }, [])
-      t.deepEqual(ary.length, expected.length)
-      t.deepEqual(ary, expected.sort())
-      t.end()
-    })
-  )
-
-})
+//strange(async(17, function (err, result) {
+//  if(result.error)
+//    console.log(result.error.stack)
+//}))
