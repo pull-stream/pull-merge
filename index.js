@@ -74,8 +74,16 @@ var merge = module.exports = function (left, right, compare) {
   compare = compare || cmp
   var cb
   function abortAll(abort, cb) {
-    if(endedLeft && endedRight) return cb()
-    throw new Error('abort not implemented yet')
+    var waiting = 2
+    var erred
+    if(endedLeft) done()
+    else getLeft(true, done)
+    if(endedRight) done()
+    else getRight(true, done)
+    function done(err) {
+      erred = erred || (err === true ? null : err)
+      if (!--waiting) cb(erred || true)
+    }
   }
 
   var getLeft = singly(left)
