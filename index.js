@@ -64,12 +64,22 @@ every pull stream has these states.
 var merge = module.exports = function (left, right, compare) {
   if(Array.isArray(left)) {
     compare = right
-    if(left.length == 1)
-      return left
-    else if(left.length == 2)
-      return merge(left.shift(), left.shift(), compare)
-    else
-      return merge(left.shift(), merge(left, compare), compare)
+    if(left.length === 0)
+      return function (abort, cb) { cb(true) } //empty stream
+    else if(left.length === 1)
+      return left[0]
+    else if(left.length === 2)
+      return merge(left[0], left[1], compare)
+    else if(left.length === 3)
+      return merge(left[0], merge(left[1], left[2], compare), compare)
+    else if(left.length >= 4) {
+      var i = ~~left.length/2
+      return merge(
+        merge(left.slice(0, i), compare),
+        merge(left.slice(i), compare),
+        compare
+      )
+    }
   }
   compare = compare || cmp
   var cb
@@ -150,3 +160,4 @@ var merge = module.exports = function (left, right, compare) {
    pull()
   }
 }
+
