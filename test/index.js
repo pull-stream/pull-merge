@@ -1,4 +1,3 @@
-
 var tape = require('tape')
 var pull = require('pull-stream')
 
@@ -9,7 +8,7 @@ tape('empty', function (t) {
   pull(
     merge(pull.values([]), pull.values([])),
     pull.collect(function (err, ary) {
-      console.log(ary)
+      // console.log(ary)
       t.deepEqual(ary, [])
       t.end()
     })
@@ -22,7 +21,7 @@ tape('equal', function (t) {
   pull(
     merge(pull.values([1]), pull.values([1])),
     pull.collect(function (err, ary) {
-      console.log(ary)
+      // console.log(ary)
       t.deepEqual(ary, [1])
       t.end()
     })
@@ -35,7 +34,7 @@ tape('different', function (t) {
   pull(
     merge(pull.values([1]), pull.values([2])),
     pull.collect(function (err, ary) {
-      console.log(ary)
+      // console.log(ary)
       t.deepEqual(ary, [1, 2])
       t.end()
     })
@@ -48,7 +47,7 @@ tape('different', function (t) {
   pull(
     merge(pull.values([2, 3]), pull.values([1])),
     pull.collect(function (err, ary) {
-      console.log(ary)
+      // console.log(ary)
       t.deepEqual(ary, [1, 2, 3])
       t.end()
     })
@@ -56,15 +55,13 @@ tape('different', function (t) {
 
 })
 
-return
-
-
+// return
 tape('simple', function (t) {
 
   pull(
     merge(pull.values([0, 2, 4, 6]), pull.values([1,3,5,7])),
     pull.collect(function (err, ary) {
-      console.log(ary)
+      // console.log(ary)
       t.deepEqual(ary, [0,1,2,3,4,5,6,7])
       t.end()
     })
@@ -72,13 +69,13 @@ tape('simple', function (t) {
 
 })
 
-return
+// return
 tape('overwrite', function (t) {
   pull(
     merge(pull.values([0, 2, 3, 5, 6]), pull.values([1,4,5,7])),
     pull.collect(function (err, ary) {
       t.deepEqual(ary, [0,1,2,3,4,5,6,7])
-      console.log(ary)
+      // console.log(ary)
       t.end()
     })
   )

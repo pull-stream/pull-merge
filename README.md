@@ -25,10 +25,11 @@ pull(
 
 ### merge(left, right, compare?)
 
-return a stream that is the merge of left and right streams.
-merge pulls a chunk from both `left` and `right` and then
-compares them. `compare` has the same signature as `Array#sort(compare)`.
-If the two chunks are compared the same, the chunk from the right stream
+Return a stream that is the merge of left and right streams.
+
+merge pulls a chunk from both `left` and `right` and then compares them.
+`compare` has a similar signature as `Array#sort(compare)`
+**but if the two chunks are compared the same**, the chunk from the right stream
 is taken, but the left chunk is dropped.
 Otherwise, the lowest chunk is passed to the stream.
 
