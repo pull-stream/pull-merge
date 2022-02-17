@@ -1,15 +1,19 @@
 var async = require('interleavings')
 var pull = require('pull-stream')
-var assert = require('assert')
+var tape = require('tape')
 var merge = require('../')
 
-async.test(strange, function (err, results, stats) {
-    console.log(results)
-    assert.equal(stats.failures, 0)
-    console.log('passed')
+tape('merge.js', t => {
+  t.plan(101)
+  async.test(strange(t), function (err, results, stats) {
+    // console.log(results)
+    t.equal(stats.failures, 0, 'no failures')
   })
 
-function strange (async) {
+})
+
+function strange (t) {
+  return function (async) {
 
     function p (read) {
       return function (abort, cb) {
@@ -29,20 +33,20 @@ function strange (async) {
       function (read) {
         return function (abort, cb) {
           read(abort, function (end, data) {
-            console.log(end, data)
+            // console.log(end, data)
             cb(end, data)
           })
         }
       },
       pull.collect(function (err, ary) {
-        console.log(ary)
+        // console.log(ary)
 
-        assert.deepEqual(ary, [1,2,3,4,5,6,7,8,9,10,11,12])
+        t.deepEqual(ary, [1,2,3,4,5,6,7,8,9,10,11,12])
         async.done()
       })
     )
-
   }
+}
 
 //strange(async(17, function (err, result) {
 //  if(result.error)
